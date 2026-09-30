@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dosier comparativo — Reino de Valencia 80</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.7"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.26.10/babel.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18.3.1",
+            "react/": "https://esm.sh/react@18.3.1/",
+            "react-dom": "https://esm.sh/react-dom@18.3.1",
+            "react-dom/": "https://esm.sh/react-dom@18.3.1/",
+            "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+            "lucide-react": "https://esm.sh/lucide-react@0.474.0?external=react"
+        }
+    }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #FBF9F5;
+            color: #242220;
+        }
+        .font-serif-display {
+            font-family: 'Cinzel', serif;
+        }
+        .font-mono-num {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F4EFEA;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D5CDC4;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #B8ADA0;
+        }
+    </style>
+</head>
+<body class="selection:bg-[#1E3A2B] selection:text-white antialiased">
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module" data-presets="react">
+        import React, { useState, useMemo } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { 
+            ArrowRight, 
+            Check, 
+            AlertTriangle, 
+            Layers, 
+            Wind, 
+            ShieldCheck, 
+            DoorOpen, 
+            Thermometer, 
+            FileCheck, 
+            ChevronDown, 
+            Menu, 
+            X, 
+            Sparkles, 
+            TrendingDown, 
+            TrendingUp, 
+            FileText, 
+            Scale, 
+            Building2, 
+            Zap, 
+            SlidersHorizontal,
+            ArrowUpRight,
+            Info,
+            HelpCircle,
+            Flame,
+            Gauge,
+            Award,
+            Calendar,
+            MapPin,
+            User,
+            CheckCircle2,
+            CircleDot
+        } from 'lucide-react';
+
+        // Reemplaza esta URL con la ruta real a tu imagen
+        const ENUE_LOGO_URL = "URL_DE_TU_IMAGEN";
+
+        const PROPOSALS = {
+            estandar: {
+                id: 'estandar',
+                name: 'Propuesta ESTÁNDAR',
+                badge: 'Alternativa Base',
+                tagline: 'Reforma integral convencional de altas prestaciones',
+                priceDisplay: '179.945 €',
+                exactTotal: '179.944,995 €',
+                exactBase: '163.586,359 €',
+                iva: '16.358,636 €',
+                rawPrice: 179944.995,
+                rawBase: 163586.359,
+                diffBase: 'Referencia base',
+                diffPrem: '-22.229 € (-11,01%)',
+                diffUPE: '-60.792 € (-25,25%)',
+                color: 'terracotta',
+                accentColor: '#C85A32',
+                textColor: 'text-[#C85A32]',
+                bgClass: 'bg-[#C85A32]',
+                borderClass: 'border-[#C85A32]',
+                lightBg: 'bg-[#FDF4F0] border-[#F2D0C4] text-[#9A3816]',
+                executiveText: 'Configuración de reforma integral completa y equilibrada. Cubre trasdosados, techos continuos, instalaciones completas, climatización por conductos Toshiba SPA 80, aerotermo Ariston Nuos Plus Wifi 200 L, carpintería Cortizo COR-80/4900, armarios empotrados laminados y acabados sanitarios estándar de calidad.'
+            },
+            premium: {
+                id: 'premium',
+                name: 'Propuesta PREMIUM',
+                badge: 'Confort & Acabados',
+                tagline: 'Mayor nivel de equipamiento, calefacción y carpintería lacada',
+                priceDisplay: '202.229 €',
+                exactTotal: '202.228,980 €',
+                exactBase: '183.844,527 €',
+                iva: '18.384,453 €',
+                rawPrice: 202228.980,
+                rawBase: 183844.527,
+                diffBase: '+22.284 € (+12,38%)',
+                diffPrem: 'Referencia intermedia',
+                diffUPE: '-38.508 € (-15,99%)',
+                color: 'petroleum',
+                accentColor: '#1B4965',
+                textColor: 'text-[#1B4965]',
+                bgClass: 'bg-[#1B4965]',
+                borderClass: 'border-[#1B4965]',
+                lightBg: 'bg-[#EEF6FA] border-[#C8E1EE] text-[#133A52]',
+                executiveText: 'Mantiene la base constructiva e incorpora una mejora sustancial en confort térmico y acabados interiores: añade instalación completa de calefacción con radiadores Incaltec y toalleros Zehnder con gas/boletines (+7.684 €), sustituye armarios laminados por armarios lacados a medida (+12.440 €) y optimiza equipamiento de baños (+813 €).'
+            },
+            upe: {
+                id: 'upe',
+                name: 'Propuesta UPE',
+                badge: 'Passivhaus / EnerPHit',
+                tagline: 'Estrategia integral de hermeticidad, aislamiento continuo y VMC',
+                priceDisplay: '240.737 €',
+                exactTotal: '240.737,230 €',
+                exactBase: '218.852,027 €',
+                iva: '21.885,203 €',
+                rawPrice: 240737.230,
+                rawBase: 218852.027,
+                diffBase: '+60.792 € (+33,78%)',
+                diffPrem: '+38.508 € (+19,04%)',
+                diffUPE: 'Máxima eficiencia',
+                color: 'forest',
+                accentColor: '#1E3A2B',
+                textColor: 'text-[#1E3A2B]',
+                bgClass: 'bg-[#1E3A2B]',
+                borderClass: 'border-[#1E3A2B]',
+                lightBg: 'bg-[#EBF3EE] border-[#C3D9CB] text-[#1E3A2B]',
+                executiveText: 'Enfoque de máxima eficiencia energética bajo estándar Passivhaus/EnerPHit. Refuerza albañilería (+13.612 €), multiplica el aislamiento y hermeticidad con lámina TRASPIR 135 y sellados (+20.364 €), implementa VMC doble flujo Zehnder ComfoAir Flex 350 HRV (+9.619 €), carpintería con premarcos Soudaframe (+8.589 €) y ensayos Blower Door / certificación (+3.082 €).'
+            }
+        };
+
+        const CHAPTERS_DATA = [
+            { id: '03', name: 'Albañilería y tabiquería', est: 31503.299, prem: 31503.299, upe: 45115.619, diffType: 'upe', obs: 'UPE incrementa +13.612 € por trasdosados y techos adaptados a envolvente térmica y hermética continua.' },
+            { id: '04', name: 'Aislamientos, impermeab. y hermeticidad', est: 2144.144, prem: 2144.144, upe: 22508.556, diffType: 'upe', obs: 'Salto clave UPE (+20.364 €): lámina TRASPIR 135, cintas de estanqueidad, Rocksol/Ultracoustic y sellado perimetral.' },
+            { id: '05', name: 'Fontanería y saneamiento', est: 8038.614, prem: 8038.614, upe: 8038.614, diffType: 'same', obs: 'Idéntico alcance en las 3 propuestas para redes de evacuación, tomas y distribución interior.' },
+            { id: '06', name: 'Instalación eléctrica e iluminación', est: 14884.051, prem: 14884.051, upe: 14884.051, diffType: 'same', obs: 'Cuadro general, mecanismos y preinstalación de iluminación idénticos en las tres alternativas.' },
+            { id: '07', name: 'Climatización, ACS y calefacción', est: 16036.272, prem: 23720.512, upe: 16036.272, diffType: 'prem', obs: 'PREMIUM añade +7.684 € por sistema completo de calefacción con radiadores Incaltec, toalleros Zehnder e inst. de gas.' },
+            { id: '08', name: 'Ventilación y calidad de aire', est: 817.890, prem: 138.240, upe: 10436.449, diffType: 'both', obs: 'UPE incluye VMC doble flujo con recuperación Zehnder ComfoAir Flex 350 (+9.619 €). Estándar/Prem. ventilación básica.' },
+            { id: '09', name: 'Carpintería exterior y cerrajería', est: 19175.156, prem: 19175.156, upe: 27763.933, diffType: 'upe', obs: 'UPE añade +8.589 € por carpinterías de altas prestaciones Passivhaus, premarcos Soudaframe y sellados herméticos.' },
+            { id: '10', name: 'Revestimientos y pavimentos', est: 18710.180, prem: 18710.180, upe: 18710.180, diffType: 'same', obs: 'Mismo paquete de parqué/laminado, alicatados y pinturas plásticas de alta calidad en las tres opciones.' },
+            { id: '11', name: 'Carpintería interior y armarios', est: 19157.760, prem: 31597.920, upe: 19157.760, diffType: 'prem', obs: 'PREMIUM suma +12.440 € por sustitución de frentes e interiores laminados por armarios lacados a medida.' },
+            { id: '12', name: 'Equipamiento de baños', est: 11708.623, prem: 12522.041, upe: 11708.623, diffType: 'prem', obs: 'PREMIUM suma +813 € por platos de ducha in situ y grifería empotrada de alta gama Sanycces.' },
+            { id: '13', name: 'Cocina y lavadero', est: 6533.590, prem: 6533.590, upe: 6533.590, diffType: 'same', obs: 'Misma reserva de mobiliario base y adecuaciones para cocina y lavadero.' },
+            { id: '14', name: 'Seguridad y salud', est: 2718.000, prem: 2718.000, upe: 2718.000, diffType: 'same', obs: 'Disposiciones normativas y protecciones colectivas fijas según plan de obra.' },
+            { id: '15', name: 'Gestión de residuos', est: 2350.080, prem: 2350.080, upe: 2350.080, diffType: 'same', obs: 'Canon de vertedero, transporte y tasas de gestión medioambiental iguales.' },
+            { id: '16', name: 'Medios auxiliares', est: 6235.200, prem: 6235.200, upe: 6235.200, diffType: 'same', obs: 'Andamios, elevadores y medios de descarga compartidos.' },
+            { id: '17', name: 'Varios y limpiezas', est: 3573.500, prem: 3573.500, upe: 3573.500, diffType: 'same', obs: 'Limpiezas intermedias, final de obra y protecciones de zonas comunes.' },
+            { id: '18', name: 'Passivhaus / EnerPHit', est: 0.000, prem: 0.000, upe: 3081.600, diffType: 'upe', obs: 'Exclusivo UPE (+3.082 €): 2 ensayos Blower Door oficiales y tasa de registro/certificación EnerPHit.' }
+        ];
+
+        const TECH_COMPARISON = [
+            {
+                feature: 'Climatización & Refrigeración',
+                estandar: 'Conductos Toshiba SPA 80 con zonificación básica',
+                premium: 'Conductos Toshiba SPA 80 con zonificación básica',
+                upe: 'Conductos Toshiba SPA 80 optimizado para cargas mínimas',
+                badge: 'Cap. 07'
+            },
+            {
+                feature: 'Sistema de Calefacción',
+                estandar: 'Bomba de calor aerotérmica (aire frío/calor)',
+                premium: 'Calefacción adicional por radiadores Incaltec + toalleros Zehnder + Gas',
+                upe: 'Bomba de calor aerotérmica (demanda reducida por envolvente)',
+                badge: 'Cap. 07'
+            },
+            {
+                feature: 'Ventilación y Renovación',
+                estandar: 'Ventilación mecánica convencional puntual (CTE)',
+                premium: 'Ventilación mecánica convencional puntual',
+                upe: 'VMC doble flujo con recuperación de calor Zehnder ComfoAir Flex 350',
+                badge: 'Cap. 08'
+            },
+            {
+                feature: 'Hermeticidad y Envolvente',
+                estandar: 'Aislamiento estándar en trasdosados (lana mineral)',
+                premium: 'Aislamiento estándar en trasdosados (lana mineral)',
+                upe: 'Lámina hermética TRASPIR 135 continua, cintas de sellado y pasos estancos',
+                badge: 'Cap. 04'
+            },
+            {
+                feature: 'Carpintería Exterior',
+                estandar: 'Cortizo COR-80 Industrial / COR-4900 con RPT',
+                premium: 'Cortizo COR-80 Industrial / COR-4900 con RPT',
+                upe: 'Ventanas Passivhaus de alto rendimiento con premarcos Soudaframe y sellado',
+                badge: 'Cap. 09'
+            },
+            {
+                feature: 'Armarios e Interiores',
+                estandar: 'Armarios empotrados acabados en laminado / melamina alta densidad',
+                premium: 'Armarios empotrados completos lacados a medida con mayor equipamiento',
+                upe: 'Armarios empotrados acabados en laminado estándar de obra',
+                badge: 'Cap. 11'
+            },
+            {
+                feature: 'Equipamiento de Baños',
+                estandar: 'Sanitarios de primeras marcas y platos de ducha standard',
+                premium: 'Platos de ducha in situ continuos + griferías empotradas Sanycces',
+                upe: 'Sanitarios y equipamiento idéntico a la versión Estándar',
+                badge: 'Cap. 12'
+            },
+            {
+                feature: 'Ensayos & Certificación',
+                estandar: 'No incluidos ensayos de hermeticidad',
+                premium: 'No incluidos ensayos de hermeticidad',
+                upe: 'Incluye 2 ensayos Blower Door oficiales y partida de certificación EnerPHit*',
+                badge: 'Cap. 18'
+            }
+        ];
+
+        function App() {
+            const [selectedTab, setSelectedTab] = useState('upe');
+            const [filterDivergences, setFilterDivergences] = useState(false);
+            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+            const formatCurrency = (val) => {
+                return new Intl.NumberFormat('es-ES', { 
+                    style: 'currency', 
+                    currency: 'EUR',
+                    minimumFractionDigits: 3,
+                    maximumFractionDigits: 3
+                }).format(val);
+            };
+
+            const formatRound = (val) => {
+                return new Intl.NumberFormat('es-ES', { 
+                    style: 'currency', 
+                    currency: 'EUR',
+                    maximumFractionDigits: 0
+                }).format(val);
+            };
+
+            const filteredChapters = useMemo(() => {
+                if (!filterDivergences) return CHAPTERS_DATA;
+                return CHAPTERS_DATA.filter(ch => ch.diffType !== 'same');
+            }, [filterDivergences]);
+
+            const totals = useMemo(() => {
+                const estBase = CHAPTERS_DATA.reduce((acc, c) => acc + c.est, 0);
+                const premBase = CHAPTERS_DATA.reduce((acc, c) => acc + c.prem, 0);
+                const upeBase = CHAPTERS_DATA.reduce((acc, c) => acc + c.upe, 0);
+                return { estBase, premBase, upeBase };
+            }, []);
+
+            return (
+                <div className="min-h-screen flex flex-col bg-[#FBF9F5] text-[#242220]">
+                    {/* Top utility bar */}
+                    <header className="bg-[#1A2621] text-[#D8E2DC] text-xs py-2 px-4 border-b border-[#2C3E35]">
+                        <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+                            <div className="flex items-center gap-4 flex-wrap">
+                                <span className="font-semibold tracking-wide text-white flex items-center gap-1.5">
+                                    <Building2 className="w-3.5 h-3.5 text-[#86EFAC]" />
+                                    ENUE PROYECTOS Y CONSTRUCCIÓN S.L.
+                                </span>
+                                <span className="text-[#94A3B8] hidden sm:inline">|</span>
+                                <span className="flex items-center gap-1">
+                                    <FileText className="w-3.5 h-3.5 text-[#94A3B8]" />
+                                    Expediente: <strong className="text-white ml-0.5">26034</strong>
+                                </span>
+                                <span className="text-[#94A3B8] hidden sm:inline">|</span>
+                                <span className="flex items-center gap-1">
+                                    <User className="w-3.5 h-3.5 text-[#94A3B8]" />
+                                    Cliente: <span className="text-white ml-0.5">Marta Ortiz</span>
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-4 flex-wrap text-[#CBD5E1]">
+                                <span className="flex items-center gap-1">
+                                    <MapPin className="w-3.5 h-3.5 text-[#86EFAC]" />
+                                    Reino de Valencia 80, 46005 Valencia
+                                </span>
+                                <span className="flex items-center gap-1">
+                                    <Calendar className="w-3.5 h-3.5 text-[#86EFAC]" />
+                                    24/09/2026
+                                </span>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Main sticky navigation */}
+                    <nav className="sticky top-0 z-50 bg-[#FBF9F5]/95 backdrop-blur-md border-b border-[#E7DFD5] transition-all shadow-xs">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                {/* Logo superior izquierdo reemplazado */}
+                                <div className="h-10 w-10 flex items-center justify-center overflow-hidden rounded-md bg-transparent">
+                                    <img 
+                                        src={ENUE_LOGO_URL}
+                                        alt="Logo ENUE"
+                                        className="h-9 w-9 object-contain"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Desktop Nav */}
+                            <div className="hidden lg:flex items-center gap-1 text-sm font-medium text-[#544D45]">
+                                <a href="#resumen" className="px-3 py-1.5 rounded-md hover:text-[#1E3A2B] hover:bg-[#F2ECE3] transition-colors">Resumen</a>
+                                <a href="#comparativa" className="px-3 py-1.5 rounded-md hover:text-[#1E3A2B] hover:bg-[#F2ECE3] transition-colors">Comparativa</a>
+                                <a href="#capitulos" className="px-3 py-1.5 rounded-md hover:text-[#1E3A2B] hover:bg-[#F2ECE3] transition-colors">Capítulos</a>
+                                <a href="#diferencias-tecnicas" className="px-3 py-1.5 rounded-md hover:text-[#1E3A2B] hover:bg-[#F2ECE3] transition-colors">Diferencias técnicas</a>
+                                <a href="#enfoque-upe" className="px-3 py-1.5 rounded-md hover:text-[#1E3A2B] hover:bg-[#F2ECE3] transition-colors">Enfoque UPE</a>
+                                <a href="#validacion" className="px-3 py-1.5 rounded-md hover:text-[#1E3A2B] hover:bg-[#F2ECE3] transition-colors">Validación</a>
+                            </div>
+
+                            <div className="hidden sm:flex items-center gap-2">
+                                <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-[#EBF3EE] text-[#1E3A2B] border border-[#C3D9CB]">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-[#1E3A2B] animate-pulse"></span>
+                                    V1 · Tres alternativas
+                                </span>
+                            </div>
+
+                            {/* Mobile menu button */}
+                            <button 
+                                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                                className="lg:hidden p-2 rounded-md text-[#544D45] hover:bg-[#F2ECE3]"
+                                aria-label="Abrir menú"
+                            >
+                                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                            </button>
+                        </div>
+
+                        {/* Mobile dropdown */}
+                        {mobileMenuOpen && (
+                            <div className="lg:hidden bg-[#FBF9F5] border-b border-[#E7DFD5] px-4 py-3 space-y-2 text-sm font-medium shadow-md">
+                                <a onClick={() => setMobileMenuOpen(false)} href="#resumen" className="block px-3 py-2 rounded-md hover:bg-[#F2ECE3] text-[#242220]">Resumen ejecutivo</a>
+                                <a onClick={() => setMobileMenuOpen(false)} href="#comparativa" className="block px-3 py-2 rounded-md hover:bg-[#F2ECE3] text-[#242220]">Comparativa interactiva</a>
+                                <a onClick={() => setMobileMenuOpen(false)} href="#capitulos" className="block px-3 py-2 rounded-md hover:bg-[#F2ECE3] text-[#242220]">Desglose de capítulos</a>
+                                <a onClick={() => setMobileMenuOpen(false)} href="#diferencias-tecnicas" className="block px-3 py-2 rounded-md hover:bg-[#F2ECE3] text-[#242220]">Diferencias técnicas</a>
+                                <a onClick={() => setMobileMenuOpen(false)} href="#enfoque-upe" className="block px-3 py-2 rounded-md hover:bg-[#F2ECE3] text-[#242220]">Enfoque UPE & Passivhaus</a>
+                                <a onClick={() => setMobileMenuOpen(false)} href="#validacion" className="block px-3 py-2 rounded-md hover:bg-[#F2ECE3] text-[#242220]">Trazabilidad y validaciones</a>
+                            </div>
+                        )}
+                    </nav>
+
+                    {/* Hero Section */}
+                    <section id="resumen" className="pt-10 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+                        <div className="max-w-3xl">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE9DF] text-[#63574A] text-xs font-semibold tracking-wide uppercase mb-4">
+                                <Scale className="w-3.5 h-3.5 text-[#1E3A2B]" />
+                                Análisis comparativo de presupuestos
+                            </div>
+                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif-display font-bold text-[#1A2621] tracking-tight leading-tight">
+                                Tres configuraciones presupuestarias para Reino de Valencia 80
+                            </h1>
+                            <p className="mt-4 text-lg text-[#61574D] leading-relaxed">
+                                Dosier comparativo de alternativas constructivas, económicas y energéticas para <strong>Marta Ortiz</strong>. Análisis detallado de las propuestas <strong>ESTÁNDAR</strong>, <strong>PREMIUM</strong> y <strong>UPE</strong>.
+                            </p>
+                        </div>
+
+                        {/* Working document advisory banner */}
+                        <div className="mt-6 p-3.5 rounded-lg bg-[#F3EDE2] border border-[#DFD3C1] text-xs text-[#6F604E] flex items-center gap-2.5">
+                            <Info className="w-4 h-4 text-[#8C6D46] shrink-0" />
+                            <span>
+                                <strong>Nota técnica de revisión:</strong> Documento de trabajo para valoración comparativa. Los importes reflejan las mediciones detalladas del proyecto a fecha 24/09/2026.
+                            </span>
+                        </div>
+
+                        {/* 3 Main Price Cards */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                            {/* Card 1: ESTANDAR */}
+                            <div className="bg-white rounded-2xl border-2 border-[#EAD5CD] p-6 shadow-sm flex flex-col justify-between relative overflow-hidden transition-all hover:shadow-md">
+                                <div className="absolute top-0 right-0 w-28 h-28 bg-[#C85A32]/5 rounded-bl-full pointer-events-none"></div>
+                                <div>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#FDF4F0] text-[#C85A32] border border-[#F2D0C4]">
+                                            Alternativa Base
+                                        </span>
+                                        <span className="text-xs font-medium text-[#7C7267]">Ref. 26034-V1</span>
+                                    </div>
+                                    <h3 className="font-serif-display font-bold text-xl text-[#242220]">ESTÁNDAR</h3>
+                                    <p className="text-xs text-[#7C7267] mt-1">Reforma completa de alta calidad convencional</p>
+                                    
+                                    <div className="mt-6 pt-4 border-t border-[#F2ECE3]">
+                                        <div className="text-xs text-[#8E8377] uppercase tracking-wider font-semibold">Total con IVA (10%)</div>
+                                        <div className="text-3xl sm:text-4xl font-mono-num font-bold text-[#C85A32] mt-1">
+                                            {PROPOSALS.estandar.priceDisplay}
+                                        </div>
+                                        <div className="text-[11px] text-[#8E8377] mt-1 font-mono-num">
+                                            Exacto doc: {PROPOSALS.estandar.exactTotal}
+                                        </div>
+                                        <div className="text-xs text-[#5C5349] mt-2 flex items-center justify-between">
+                                            <span>Base imponible:</span>
+                                            <span className="font-mono-num font-medium">{PROPOSALS.estandar.exactBase}</span>
+                                        </div>
+                                        <div className="text-xs text-[#5C5349] flex items-center justify-between mt-0.5">
+                                            <span>IVA (10%):</span>
+                                            <span className="font-mono-num font-medium">{PROPOSALS.estandar.iva}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mt-6 pt-4 border-t border-[#F4EFEA] bg-[#FBF9F7] -mx-6 -mb-6 p-4 text-xs space-y-1.5">
+                                    <div className="flex justify-between text-[#5C5349]">
+                                        <span>vs. PREMIUM:</span>
+                                        <span className="font-mono-num font-semibold text-[#1B4965]">-22.284 € (-11,01%)</span>
+                                    </div>
+                                    <div className="flex justify-between text-[#5C5349]">
+                                        <span>vs. UPE:</span>
+                                        <span className="font-mono-num font-semibold text-[#1E3A2B]">-60.792 € (-25,25%)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Card 2: PREMIUM */}
+                            <div className="bg-white rounded-2xl border-2 border-[#BCD8E6] p-6 shadow-sm flex flex-col justify-between relative overflow-hidden transition-all hover:shadow-md">
+                                <div className="absolute top-0 right-0 w-28 h-28 bg-[#1B4965]/5 rounded-bl-full pointer-events-none"></div>
+                                <div>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#EEF6FA] text-[#1B4965] border border-[#C8E1EE]">
+                                            Confort & Acabados
+                                        </span>
+                                        <span className="text-xs font-medium text-[#7C7267]">+Calefacción y Lacados</span>
+                                    </div>
+                                    <h3 className="font-serif-display font-bold text-xl text-[#242220]">PREMIUM</h3>
+                                    <p className="text-xs text-[#7C7267] mt-1">Confort térmico ampliado y carpintería a medida</p>
+                                    
+                                    <div className="mt-6 pt-4 border-t border-[#F2ECE3]">
+                                        <div className="text-xs text-[#8E8377] uppercase tracking-wider font-semibold">Total con IVA (10%)</div>
+                                        <div className="text-3xl sm:text-4xl font-mono-num font-bold text-[#1B4965] mt-1">
+                                            {PROPOSALS.premium.priceDisplay}
+                                        </div>
+                                        <div className="text-[11px] text-[#8E8377] mt-1 font-mono-num">
+                                            Exacto doc: {PROPOSALS.premium.exactTotal}
+                                        </div>
+                                        <div className="text-xs text-[#5C5349] mt-2 flex items-center justify-between">
+                                            <span>Base imponible:</span>
+                                            <span className="font-mono-num font-medium">{PROPOSALS.premium.exactBase}</span>
+                                        </div>
+                                        <div className="text-xs text-[#5C5349] flex items-center justify-between mt-0.5">
+                                            <span>IVA (10%):</span>
+                                            <span className="font-mono-num font-medium">{PROPOSALS.premium.iva}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mt-6 pt-4 border-t border-[#F4EFEA] bg-[#F7FAFC] -mx-6 -mb-6 p-4 text-xs space-y-1.5">
+                                    <div className="flex justify-between text-[#5C5349]">
+                                        <span>vs. ESTÁNDAR:</span>
+                                        <span className="font-mono-num font-semibold text-[#1B4965]">+22.284 € (+12,38%)</span>
+                                    </div>
+                                    <div className="flex justify-between text-[#5C5349]">
+                                        <span>vs. UPE:</span>
+                                        <span className="font-mono-num font-semibold text-[#1E3A2B]">-38.508 € (-15,99%)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Card 3: UPE */}
+                            <div className="bg-white rounded-2xl border-2 border-[#A8CEB7] p-6 shadow-sm flex flex-col justify-between relative overflow-hidden transition-all hover:shadow-md ring-2 ring-[#1E3A2B]/10">
+                                <div className="absolute top-0 right-0 w-28 h-28 bg-[#1E3A2B]/8 rounded-bl-full pointer-events-none"></div>
+                                <div>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#EBF3EE] text-[#1E3A2B] border border-[#C3D9CB] flex items-center gap-1">
+                                            <Sparkles className="w-3 h-3 text-[#1E3A2B]" />
+                                            Passivhaus / EnerPHit
+                                        </span>
+                                        <span className="text-xs font-medium text-[#7C7267]">Máxima eficiencia</span>
+                                    </div>
+                                    <h3 className="font-serif-display font-bold text-xl text-[#242220]">UPE</h3>
+                                    <p className="text-xs text-[#7C7267] mt-1">Hermeticidad, ventilación de doble flujo y ensayos</p>
+                                    
+                                    <div className="mt-6 pt-4 border-t border-[#F2ECE3]">
+                                        <div className="text-xs text-[#8E8377] uppercase tracking-wider font-semibold">Total con IVA (10%)</div>
+                                        <div className="text-3xl sm:text-4xl font-mono-num font-bold text-[#1E3A2B] mt-1">
+                                            {PROPOSALS.upe.priceDisplay}
+                                        </div>
+                                        <div className="text-[11px] text-[#8E8377] mt-1 font-mono-num">
+                                            Exacto doc: {PROPOSALS.upe.exactTotal}
+                                        </div>
+                                        <div className="text-xs text-[#5C5349] mt-2 flex items-center justify-between">
+                                            <span>Base imponible:</span>
+                                            <span className="font-mono-num font-medium">{PROPOSALS.upe.exactBase}</span>
+                                        </div>
+                                        <div className="text-xs text-[#5C5349] flex items-center justify-between mt-0.5">
+                                            <span>IVA (10%):</span>
+                                            <span className="font-mono-num font-medium">{PROPOSALS.upe.iva}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mt-6 pt-4 border-t border-[#F4EFEA] bg-[#F4F9F6] -mx-6 -mb-6 p-4 text-xs space-y-1.5">
+                                    <div className="flex justify-between text-[#5C5349]">
+                                        <span>vs. ESTÁNDAR:</span>
+                                        <span className="font-mono-num font-semibold text-[#1E3A2B]">+60.792 € (+33,78%)</span>
+                                    </div>
+                                    <div className="flex justify-between text-[#5C5349]">
+                                        <span>vs. PREMIUM:</span>
+                                        <span className="font-mono-num font-semibold text-[#1E3A2B]">+38.508 € (+19,04%)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Horizontal Proportional Bar */}
+                        <div className="mt-8 bg-white rounded-xl p-5 border border-[#E7DFD5] shadow-xs">
+                            <div className="flex items-center justify-between text-xs font-semibold text-[#7C7267] mb-2">
+                                <span>DISTRIBUCIÓN ECONÓMICA COMPARADA (TOTAL CON IVA)</span>
+                                <span>Rango: 179.945 € – 240.737 €</span>
+                            </div>
+                            <div className="space-y-3">
+                                <div>
+                                    <div className="flex justify-between text-xs mb-1">
+                                        <span className="font-medium text-[#C85A32]">ESTÁNDAR (100% base)</span>
+                                        <span className="font-mono-num font-bold">179.945 €</span>
+                                    </div>
+                                    <div className="w-full h-3 bg-[#F2ECE3] rounded-full overflow-hidden">
+                                        <div className="h-full bg-[#C85A32] rounded-full transition-all duration-500" style={{ width: '74.7%' }}></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="flex justify-between text-xs mb-1">
+                                        <span className="font-medium text-[#1B4965]">PREMIUM (+12,38%)</span>
+                                        <span className="font-mono-num font-bold">202.229 €</span>
+                                    </div>
+                                    <div className="w-full h-3 bg-[#F2ECE3] rounded-full overflow-hidden">
+                                        <div className="h-full bg-[#1B4965] rounded-full transition-all duration-500" style={{ width: '84.0%' }}></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="flex justify-between text-xs mb-1">
+                                        <span className="font-medium text-[#1E3A2B]">UPE (+33,78%)</span>
+                                        <span className="font-mono-num font-bold">240.737 €</span>
+                                    </div>
+                                    <div className="w-full h-3 bg-[#F2ECE3] rounded-full overflow-hidden">
+                                        <div className="h-full bg-[#1E3A2B] rounded-full transition-all duration-500" style={{ width: '100%' }}></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Executive 3-Column Reading */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+                            <div className="p-5 rounded-xl bg-white border border-[#E7DFD5]">
+                                <div className="flex items-center gap-2 mb-2 text-[#C85A32]">
+                                    <Building2 className="w-4 h-4" />
+                                    <h4 className="font-serif-display font-bold text-sm tracking-wide">1. ENFOQUE ESTÁNDAR</h4>
+                                </div>
+                                <p className="text-xs text-[#5C5349] leading-relaxed">
+                                    Optimización de la inversión con calidades altas de construcción tradicional. Climatización eficiente por conductos Toshiba, aerotermo Nuos Plus Wifi 200 L, cerramientos Cortizo COR-80 y carpintería interior laminada. Ideal para quien prioriza equilibrio presupuestario.
+                                </p>
+                            </div>
+
+                            <div className="p-5 rounded-xl bg-white border border-[#E7DFD5]">
+                                <div className="flex items-center gap-2 mb-2 text-[#1B4965]">
+                                    <Flame className="w-4 h-4" />
+                                    <h4 className="font-serif-display font-bold text-sm tracking-wide">2. ENFOQUE PREMIUM</h4>
+                                </div>
+                                <p className="text-xs text-[#5C5349] leading-relaxed">
+                                    Eleva el confort térmico y la estética interior. Añade sistema de calefacción integral con radiadores Incaltec y toalleros Zehnder con gas, sustituye armarios laminados por frentes e interiores lacados a medida y mejora el equipamiento de baños.
+                                </p>
+                            </div>
+
+                            <div className="p-5 rounded-xl bg-white border border-[#E7DFD5]">
+                                <div className="flex items-center gap-2 mb-2 text-[#1E3A2B]">
+                                    <ShieldCheck className="w-4 h-4" />
+                                    <h4 className="font-serif-display font-bold text-sm tracking-wide">3. ENFOQUE UPE</h4>
+                                </div>
+                                <p className="text-xs text-[#5C5349] leading-relaxed">
+                                    Transformación de la vivienda bajo criterios Passivhaus/EnerPHit. Aislamiento perimetral reinforced, capa hermética continua TRASPIR 135 con sellados, ventilación de doble flujo Zehnder ComfoAir Flex 350, ventanas con premarcos Soudaframe y ensayos Blower Door.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Interactive Comparison Tabs Section */}
+                    <section id="comparativa" className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full border-t border-[#E7DFD5]">
+                        <div className="text-center max-w-2xl mx-auto mb-8">
+                            <span className="text-xs font-semibold uppercase tracking-wider text-[#7C7267] bg-[#EFE9DF] px-3 py-1 rounded-full">
+                                Análisis pormenorizado
+                            </span>
+                            <h2 className="text-2xl sm:text-3xl font-serif-display font-bold text-[#1A2621] mt-2">
+                                Comparativa interactiva por propuesta
+                            </h2>
+                            <p className="text-xs sm:text-sm text-[#61574D] mt-1">
+                                Selecciona una configuración para explorar su enfoque constructivo, partidas clave y consideraciones técnicas.
+                            </p>
+                        </div>
+
+                        {/* Interactive Tab Switcher */}
+                        <div className="flex justify-center mb-8">
+                            <div className="inline-flex p-1.5 rounded-xl bg-[#EFE9DF] border border-[#DFD3C1] max-w-md w-full">
+                                <button
+                                    onClick={() => setSelectedTab('estandar')}
+                                    className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all ${
+                                        selectedTab === 'estandar' 
+                                            ? 'bg-white text-[#C85A32] shadow-xs' 
+                                            : 'text-[#61574D] hover:text-[#242220]'
+                                    }`}
+                                >
+                                    ESTÁNDAR
+                                </button>
+                                <button
+                                    onClick={() => setSelectedTab('premium')}
+                                    className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all ${
+                                        selectedTab === 'premium' 
+                                            ? 'bg-white text-[#1B4965] shadow-xs' 
+                                            : 'text-[#61574D] hover:text-[#242220]'
+                                    }`}
+                                >
+                                    PREMIUM
+                                </button>
+                                <button
+                                    onClick={() => setSelectedTab('upe')}
+                                    className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all ${
+                                        selectedTab === 'upe' 
+                                            ? 'bg-white text-[#1E3A2B] shadow-xs' 
+                                            : 'text-[#61574D] hover:text-[#242220]'
+                                    }`}
+                                >
+                                    UPE (Passivhaus)
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Tab Content Box */}
+                        <div className="bg-white rounded-2xl border border-[#E7DFD5] p-6 sm:p-8 shadow-xs">
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                <div className="lg:col-span-1 border-b lg:border-b-0 lg:border-r border-[#F2ECE3] pb-6 lg:pb-0 lg:pr-8">
+                                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${PROPOSALS[selectedTab].lightBg}`}>
+                                        {PROPOSALS[selectedTab].badge}
+                                    </span>
+                                    <h3 className="text-2xl font-serif-display font-bold text-[#1A2621] mt-3">
+                                        {PROPOSALS[selectedTab].name}
+                                    </h3>
+                                    <p className="text-xs text-[#7C7267] mt-1">
+                                        {PROPOSALS[selectedTab].tagline}
+                                    </p>
+
+                                    <div className="mt-6 p-4 rounded-xl bg-[#FBF9F5] border border-[#EBE3D7]">
+                                        <div className="text-xs text-[#7C7267]">Inversión total (con 10% IVA)</div>
+                                        <div className={`text-3xl font-mono-num font-bold mt-1 ${PROPOSALS[selectedTab].textColor}`}>
+                                            {PROPOSALS[selectedTab].priceDisplay}
+                                        </div>
+                                        <div className="text-xs text-[#5C5349] mt-2 space-y-1">
+                                            <div className="flex justify-between">
+                                                <span>Base imponible:</span>
+                                                <span className="font-mono-num font-medium">{PROPOSALS[selectedTab].exactBase}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span>IVA 10%:</span>
+                                                <span className="font-mono-num font-medium">{PROPOSALS[selectedTab].iva}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-4 text-xs text-[#61574D] leading-relaxed">
+                                        {PROPOSALS[selectedTab].executiveText}
+                                    </div>
+                                </div>
+
+                                <div className="lg:col-span-2 space-y-6">
+                                    <div>
+                                        <h4 className="text-xs font-bold uppercase tracking-wider text-[#7C7267] mb-3">
+                                            Componentes y partidas principales incluidas
+                                        </h4>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                            {selectedTab === 'estandar' && (
+                                                <>
+                                                    <div className="p-3 rounded-lg bg-[#FBF9F5] border border-[#EFE8DC] flex items-start gap-2.5">
+                                                        <CheckCircle2 className="w-4 h-4 text-[#C85A32] shrink-0 mt-0.5" />
+                                                        <div>
+                                                            <strong>Climatización por conductos</strong>
+                                                            <p className="text-[#61574D] mt-0.5">Bomba de calor Toshiba SPA 80 con distribución por conductos y rejillas.</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="p-3 rounded-lg bg-[#FBF9F5] border border-[#EFE8DC] flex items-start gap-2.5">
+                                                        <CheckCircle2 className="w-4 h-4 text-[#C85A32] shrink-0 mt-0.5" />
+                                                        <div>
+                                                            <strong>Agua Caliente Sanitaria</strong>
+                                                            <p className="text-[#61574D] mt-0.5">Aerotermo de alta eficiencia Ariston Nuos Plus Wifi 200 litros.</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="p-3 rounded-lg bg-[#FBF9F5] border border-[#EFE8DC] flex items-start gap-2.5">
+                                                        <CheckCircle2 className="w-4 h-4 text-[#C85A32] shrink-0 mt-0.5" />
+                                                        <div>
+                                                            <strong>Carpintería exterior Cortizo</strong>
+                                                            <p className="text-[#61574D] mt-0.5">Sistemas COR-80 Industrial y COR-4900 con rotura de puente térmico.</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="p-3 rounded-lg bg-[#FBF9F5] border border-[#EFE8DC] flex items-start gap-2.5">
+                                                        <CheckCircle2 className="w-4 h-4 text-[#C85A32] shrink-0 mt-0.5" />
+                                                        <div>
+                                                            <strong>Armarios laminados</strong>
+                                                            <p className="text-[#61574D] mt-0.5">Frentes e interiores en tablero melamínico de alta resistencia.</p>
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            )}
+
+                                            {selectedTab === 'premium' && (
+                                                <>
+                                                    <div className="p-3 rounded-lg bg-[#FBF9F5] border border-[#EFE8DC] flex items-start gap-2.5">
+                                                        <CheckCircle2 className="w-4 h-4 text-[#1B4965] shrink-0 mt-0.5" />
+                                                        <div>
+                                                            <strong>Calefacción completa por radiadores</strong>
+                                                            <p className="text-[#61574D] mt-0.5">Emisores Incaltec, toalleros Zehnder, caldera/gas y boletines autorizados (+7.684 €).</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="p-3 rounded-lg bg-[#FBF9F5] border border-[#EFE8DC] flex items-start gap-2.5">
+                                                        <CheckCircle2 className="w-4 h-4 text-[#1B4965] shrink-0 mt-0.5" />
+                                                        <div>
+                                                            <strong>Armarios lacados a medida</strong>
+                                                            <p className="text-[#61574D] mt-0.5">Carpintería interior premium con frentes e interiores lacados (+12.440 €).</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="p-3 rounded-lg bg-[#FBF9F5] border border-[#EFE8DC] flex items-start gap-2.5">
+                                                        <CheckCircle2 className="w-4 h-4 text-[#1B4965] shrink-0 mt-0.5" />
+                                                        <div>
+                                                            <strong>Baños mejorados</strong>
+                                                            <p className="text-[#61574D] mt-0.5">Platos de ducha in situ y grifería empotrada de diseño Sanycces (+813 €).</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="p-3 rounded-lg bg-[#FBF9F5] border border-[#EFE8DC] flex items-start gap-2.5">
+                                                        <CheckCircle2 className="w-4 h-4 text-[#1B4965] shrink-0 mt-0.5" />
+                                                        <div>
+                                                            <strong>Climatización & ACS base</strong>
+                                                            <p className="text-[#61574D] mt-0.5">Mantiene el sistema por conductos Toshiba SPA 80 y aerotermo Ariston 200 L.</p>
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            )}
+
+                                            {selectedTab === 'upe' && (
+                                                <>
+                                                    <div className="p-3 rounded-lg bg-[#FBF9F5] border border-[#EFE8DC] flex items-start gap-2.5">
+                                                        <CheckCircle2 className="w-4 h-4 text-[#1E3A2B] shrink-0 mt-0.5" />
+                                                        <div>
+                                                            <strong>Hermeticidad TRASPIR 135</strong>
+                                                            <p className="text-[#61574D] mt-0.5">Lámina hermética continua, cintas de sellado y pasos estancos (+20.364 € en Cap. 04).</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="p-3 rounded-lg bg-[#FBF9F5] border border-[#EFE8DC] flex items-start gap-2.5">
+                                                        <CheckCircle2 className="w-4 h-4 text-[#1E3A2B] shrink-0 mt-0.5" />
+                                                        <div>
+                                                            <strong>VMC doble flujo con recuperación</strong>
+                                                            <p className="text-[#61574D] mt-0.5">Equipo Zehnder ComfoAir Flex 350 HRV con conductos estancos (+9.619 € en Cap. 08).</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="p-3 rounded-lg bg-[#FBF9F5] border border-[#EFE8DC] flex items-start gap-2.5">
+                                                        <CheckCircle2 className="w-4 h-4 text-[#1E3A2B] shrink-0 mt-0.5" />
+                                                        <div>
+                                                            <strong>Ventanas Passivhaus & Premarcos</strong>
+                                                            <p className="text-[#61574D] mt-0.5">Sistemas certificados con premarcos Soudaframe y cintas selladoras (+8.589 €).</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="p-3 rounded-lg bg-[#FBF9F5] border border-[#EFE8DC] flex items-start gap-2.5">
+                                                        <CheckCircle2 className="w-4 h-4 text-[#1E3A2B] shrink-0 mt-0.5" />
+                                                        <div>
+                                                            <strong>2 Ensayos Blower Door & Certificación</strong>
+                                                            <p className="text-[#61574D] mt-0.5">Control de estanqueidad durante y al final de obra + tasa EnerPHit (+3.082 €).</p>
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Clarification notes */}
+                                    <div className="p-4 rounded-xl bg-[#F6F2EB] border border-[#E5DAC8] text-xs space-y-2">
+                                        <div className="font-semibold text-[#3D352E] flex items-center gap-1.5">
+                                            <Info className="w-3.5 h-3.5 text-[#1E3A2B]" />
+                                            Consideraciones de diseño de esta alternativa:
+                                        </div>
+                                        {selectedTab === 'estandar' && (
+                                            <p className="text-[#61574D]">
+                                                Representa el estándar de reforma integral de ENUE con una excelente relación coste/prestaciones. No incluye calefacción por circuito de agua independiente ni paquete de hermeticidad Passivhaus.
+                                            </p>
+                                        )}
+                                        {selectedTab === 'premium' && (
+                                            <p className="text-[#61574D]">
+                                                Es la opción recomendada para quienes buscan una vivienda con dos fuentes de calor (bomba de calor + radiadores de agua) y un acabado de ebanistería superior con armarios lacados continuos.
+                                            </p>
+                                        )}
+                                        {selectedTab === 'upe' && (
+                                            <p className="text-[#61574D]">
+                                                El presupuesto incluye las partidas para ejecutar y certificar bajo estándar EnerPHit. La obtención formal del sello final requerirá la validación externa del certificador acreditado, cálculo PHPP y el resultado favorable de los 2 ensayos Blower Door.
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Chapters Breakdown Table */}
+                    <section id="capitulos" className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full border-t border-[#E7DFD5]">
+                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+                            <div>
+                                <span className="text-xs font-semibold uppercase tracking-wider text-[#7C7267] bg-[#EFE9DF] px-3 py-1 rounded-full">
+                                    Desglose por capítulos (Base Imponible antes de IVA)
+                                </span>
+                                <h2 className="text-2xl sm:text-3xl font-serif-display font-bold text-[#1A2621] mt-2">
+                                    Diferencias por capítulo presupuestario
+                                </h2>
+                                <p className="text-xs sm:text-sm text-[#61574D] mt-1">
+                                    Importes exactos extraídos de las mediciones de los tres documentos oficiales de fecha 24/09/2026.
+                                </p>
+                            </div>
+
+                            {/* Filter switch */}
+                            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-[#E7DFD5] shadow-2xs self-start md:self-auto">
+                                <SlidersHorizontal className="w-4 h-4 text-[#7C7267]" />
+                                <span className="text-xs font-medium text-[#544D45]">Filtrar:</span>
+                                <button
+                                    onClick={() => setFilterDivergences(false)}
+                                    className={`text-xs px-2.5 py-1 rounded-md font-medium transition-colors ${
+                                        !filterDivergences ? 'bg-[#1E3A2B] text-white' : 'text-[#61574D] hover:bg-[#F2ECE3]'
+                                    }`}
+                                >
+                                    Ver todos (16)
+                                </button>
+                                <button
+                                    onClick={() => setFilterDivergences(true)}
+                                    className={`text-xs px-2.5 py-1 rounded-md font-medium transition-colors ${
+                                        filterDivergences ? 'bg-[#1E3A2B] text-white' : 'text-[#61574D] hover:bg-[#F2ECE3]'
+                                    }`}
+                                >
+                                    Solo divergencias (7)
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Responsive Table Card */}
+                        <div className="bg-white rounded-2xl border border-[#E7DFD5] shadow-xs overflow-hidden">
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left text-xs sm:text-sm border-collapse">
+                                    <thead>
+                                        <tr className="bg-[#F8F5F0] border-b border-[#E7DFD5] text-[#544D45] uppercase text-[11px] tracking-wider font-semibold">
+                                            <th className="py-3.5 px-4">Capítulo</th>
+                                            <th className="py-3.5 px-3 text-right">ESTÁNDAR (€)</th>
+                                            <th className="py-3.5 px-3 text-right">PREMIUM (€)</th>
+                                            <th className="py-3.5 px-3 text-right">UPE (€)</th>
+                                            <th className="py-3.5 px-4 hidden md:table-cell">Observaciones y divergencias</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-[#F2ECE3]">
+                                        {filteredChapters.map((cap) => {
+                                            const isDivergent = cap.diffType !== 'same';
+                                            return (
+                                                <tr key={cap.id} className={`hover:bg-[#FAF7F2] transition-colors ${isDivergent ? 'bg-[#FDFBF7]' : ''}`}>
+                                                    <td className="py-3 px-4">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="font-mono-num text-[11px] font-bold px-1.5 py-0.5 rounded bg-[#EFE9DF] text-[#544D45]">
+                                                                {cap.id}
+                                                            </span>
+                                                            <span className="font-medium text-[#242220]">{cap.name}</span>
+                                                        </div>
+                                                        <p className="text-[11px] text-[#7C7267] mt-1 md:hidden">{cap.obs}</p>
+                                                    </td>
+                                                    <td className="py-3 px-3 text-right font-mono-num text-[#544D45]">
+                                                        {formatCurrency(cap.est)}
+                                                    </td>
+                                                    <td className={`py-3 px-3 text-right font-mono-num ${cap.prem !== cap.est ? 'font-bold text-[#1B4965] bg-[#EEF6FA]/50' : 'text-[#544D45]'}`}>
+                                                        {formatCurrency(cap.prem)}
+                                                    </td>
+                                                    <td className={`py-3 px-3 text-right font-mono-num ${cap.upe !== cap.est ? 'font-bold text-[#1E3A2B] bg-[#EBF3EE]/50' : 'text-[#544D45]'}`}>
+                                                        {formatCurrency(cap.upe)}
+                                                    </td>
+                                                    <td className="py-3 px-4 text-xs text-[#61574D] hidden md:table-cell">
+                                                        {cap.obs}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr className="bg-[#F4EFEA] border-t-2 border-[#D9CFC4] font-bold text-[#242220]">
+                                            <td className="py-3.5 px-4 text-xs uppercase tracking-wider font-serif-display">
+                                                TOTAL BASE IMPONIBLE
+                                            </td>
+                                            <td className="py-3.5 px-3 text-right font-mono-num text-sm text-[#C85A32]">
+                                                {formatCurrency(totals.estBase)}
+                                            </td>
+                                            <td className="py-3.5 px-3 text-right font-mono-num text-sm text-[#1B4965]">
+                                                {formatCurrency(totals.premBase)}
+                                            </td>
+                                            <td className="py-3.5 px-3 text-right font-mono-num text-sm text-[#1E3A2B]">
+                                                {formatCurrency(totals.upeBase)}
+                                            </td>
+                                            <td className="py-3.5 px-4 text-xs text-[#7C7267] hidden md:table-cell">
+                                                Suma de bases antes de impuestos
+                                            </td>
+                                        </tr>
+                                        <tr className="bg-[#EAE2D7] text-[#242220] font-bold text-xs">
+                                            <td className="py-2.5 px-4 uppercase tracking-wider">
+                                                IVA APLICABLE (10%)
+                                            </td>
+                                            <td className="py-2.5 px-3 text-right font-mono-num">
+                                                {formatCurrency(totals.estBase * 0.1)}
+                                            </td>
+                                            <td className="py-2.5 px-3 text-right font-mono-num">
+                                                {formatCurrency(totals.premBase * 0.1)}
+                                            </td>
+                                            <td className="py-2.5 px-3 text-right font-mono-num">
+                                                {formatCurrency(totals.upeBase * 0.1)}
+                                            </td>
+                                            <td className="py-2.5 px-4 text-xs text-[#7C7267] hidden md:table-cell">
+                                                Tipo reducido obras reforma vivienda
+                                            </td>
+                                        </tr>
+                                        <tr className="bg-[#1E3A2B] text-white font-bold text-sm">
+                                            <td className="py-4 px-4 font-serif-display tracking-wide">
+                                                PRESUPUESTO TOTAL CON IVA
+                                            </td>
+                                            <td className="py-4 px-3 text-right font-mono-num text-[#F6AD55]">
+                                                {formatCurrency(PROPOSALS.estandar.rawPrice)}
+                                            </td>
+                                            <td className="py-4 px-3 text-right font-mono-num text-[#90CDF4]">
+                                                {formatCurrency(PROPOSALS.premium.rawPrice)}
+                                            </td>
+                                            <td className="py-4 px-3 text-right font-mono-num text-[#86EFAC]">
+                                                {formatCurrency(PROPOSALS.upe.rawPrice)}
+                                            </td>
+                                            <td className="py-4 px-4 text-xs text-[#CBD5E1] font-normal hidden md:table-cell">
+                                                Valores exactos en documentos adjuntos
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Technical Differences Grid */}
+                    <section id="diferencias-tecnicas" className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full border-t border-[#E7DFD5]">
+                        <div className="text-center max-w-2xl mx-auto mb-10">
+                            <span className="text-xs font-semibold uppercase tracking-wider text-[#7C7267] bg-[#EFE9DF] px-3 py-1 rounded-full">
+                                Matriz Técnica
+                            </span>
+                            <h2 className="text-2xl sm:text-3xl font-serif-display font-bold text-[#1A2621] mt-2">
+                                Comparativa técnica de sistemas y materiales
+                            </h2>
+                            <p className="text-xs sm:text-sm text-[#61574D] mt-1">
+                                Visión directa de las diferencias cualitativas entre las tres especificaciones.
+                            </p>
+                        </div>
+
+                        <div className="bg-white rounded-2xl border border-[#E7DFD5] shadow-xs overflow-hidden">
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left text-xs sm:text-sm">
+                                    <thead>
+                                        <tr className="bg-[#F8F5F0] border-b border-[#E7DFD5] text-[#544D45]">
+                                            <th className="py-4 px-4 font-semibold uppercase text-[11px] tracking-wider w-1/4">Elemento constructivo</th>
+                                            <th className="py-4 px-4 font-semibold uppercase text-[11px] tracking-wider text-[#C85A32] w-1/4">ESTÁNDAR</th>
+                                            <th className="py-4 px-4 font-semibold uppercase text-[11px] tracking-wider text-[#1B4965] w-1/4">PREMIUM</th>
+                                            <th className="py-4 px-4 font-semibold uppercase text-[11px] tracking-wider text-[#1E3A2B] w-1/4">UPE (Passivhaus)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-[#F2ECE3]">
+                                        {TECH_COMPARISON.map((row, idx) => (
+                                            <tr key={idx} className="hover:bg-[#FAF7F2] transition-colors">
+                                                <td className="py-4 px-4 font-medium text-[#242220]">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <span>{row.feature}</span>
+                                                    </div>
+                                                    <span className="text-[10px] font-mono-num font-semibold text-[#8E8377] bg-[#EFE9DF] px-1.5 py-0.5 rounded inline-block mt-1">
+                                                        {row.badge}
+                                                    </span>
+                                                </td>
+                                                <td className="py-4 px-4 text-xs text-[#544D45] bg-[#FDF9F7]/50">
+                                                    {row.estandar}
+                                                </td>
+                                                <td className="py-4 px-4 text-xs text-[#133A52] bg-[#F4F9FC]/50">
+                                                    {row.premium}
+                                                </td>
+                                                <td className="py-4 px-4 text-xs text-[#1E3A2B] bg-[#F4F9F6]/50 font-medium">
+                                                    {row.upe}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Dark Immersive UPE Passivhaus Section */}
+                    <section id="enfoque-upe" className="py-16 px-4 sm:px-6 lg:px-8 bg-[#16251E] text-white border-y border-[#263E32]">
+                        <div className="max-w-7xl mx-auto">
+                            <div className="max-w-3xl mb-12">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#243A2F] text-[#86EFAC] text-xs font-semibold uppercase tracking-wider mb-3">
+                                    <Sparkles className="w-3.5 h-3.5" />
+                                    Ingeniería de Envolvente
+                                </div>
+                                <h2 className="text-3xl sm:text-4xl font-serif-display font-bold text-white tracking-tight">
+                                    La diferencia UPE no es solo más aislamiento
+                                </h2>
+                                <p className="mt-3 text-[#B7C8BE] text-sm sm:text-base leading-relaxed">
+                                    El sobrecoste de <strong>+60.792 €</strong> de la propuesta UPE responde a una estrategia física integral para convertir la vivienda en un espacio de altísima eficiencia y confort acústico-térmico continuo.
+                                </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {/* Layer 1 */}
+                                <div className="p-6 rounded-2xl bg-[#1D3228] border border-[#2B493B] flex flex-col justify-between">
+                                    <div>
+                                        <div className="w-10 h-10 rounded-xl bg-[#243F32] flex items-center justify-center text-[#86EFAC] mb-4">
+                                            <Layers className="w-5 h-5" />
+                                        </div>
+                                        <h3 className="font-serif-display font-bold text-lg text-white">1. Hermeticidad TRASPIR 135</h3>
+                                        <p className="text-xs text-[#B7C8BE] mt-2 leading-relaxed">
+                                            Instalación de lámina reguladora de vapor TRASPIR 135 continua en toda la envolvente exterior, eliminando infiltraciones parásitas de aire y condensaciones intersticiales.
+                                        </p>
+                                    </div>
+                                    <div className="mt-4 pt-3 border-t border-[#294537] text-[11px] font-mono-num text-[#86EFAC]">
+                                        Capítulo 04 · +20.364 € vs Estándar
+                                    </div>
+                                </div>
+
+                                {/* Layer 2 */}
+                                <div className="p-6 rounded-2xl bg-[#1D3228] border border-[#2B493B] flex flex-col justify-between">
+                                    <div>
+                                        <div className="w-10 h-10 rounded-xl bg-[#243F32] flex items-center justify-center text-[#86EFAC] mb-4">
+                                            <Wind className="w-5 h-5" />
+                                        </div>
+                                        <h3 className="font-serif-display font-bold text-lg text-white">2. VMC Doble Flujo Zehnder</h3>
+                                        <p className="text-xs text-[#B7C8BE] mt-2 leading-relaxed">
+                                            Sistema Zehnder ComfoAir Flex 350 HRV con recuperación entálpica de calor. Filtra polen, partículas finas y renueva el aire interior 24/7 sin pérdidas térmicas.
+                                        </p>
+                                    </div>
+                                    <div className="mt-4 pt-3 border-t border-[#294537] text-[11px] font-mono-num text-[#86EFAC]">
+                                        Capítulo 08 · +9.619 € vs Estándar
+                                    </div>
+                                </div>
+
+                                {/* Layer 3 */}
+                                <div className="p-6 rounded-2xl bg-[#1D3228] border border-[#2B493B] flex flex-col justify-between">
+                                    <div>
+                                        <div className="w-10 h-10 rounded-xl bg-[#243F32] flex items-center justify-center text-[#86EFAC] mb-4">
+                                            <DoorOpen className="w-5 h-5" />
+                                        </div>
+                                        <h3 className="font-serif-display font-bold text-lg text-white">3. Premarcos Soudaframe</h3>
+                                        <p className="text-xs text-[#B7C8BE] mt-2 leading-relaxed">
+                                            Premarcos aislantes térmicos Soudaframe SWI que rompen el puente térmico en el plano del aislamiento y aseguran el sellado estanco perimetral con cintas expansivas.
+                                        </p>
+                                    </div>
+                                    <div className="mt-4 pt-3 border-t border-[#294537] text-[11px] font-mono-num text-[#86EFAC]">
+                                        Capítulo 09 · +8.589 € vs Estándar
+                                    </div>
+                                </div>
+
+                                {/* Layer 4 */}
+                                <div className="p-6 rounded-2xl bg-[#1D3228] border border-[#2B493B] flex flex-col justify-between">
+                                    <div>
+                                        <div className="w-10 h-10 rounded-xl bg-[#243F32] flex items-center justify-center text-[#86EFAC] mb-4">
+                                            <Gauge className="w-5 h-5" />
+                                        </div>
+                                        <h3 className="font-serif-display font-bold text-lg text-white">4. Dos Ensayos Blower Door</h3>
+                                        <p className="text-xs text-[#B7C8BE] mt-2 leading-relaxed">
+                                            Pruebas de presurización/despresurización a 50 Pa para detectar fugas durante la fase de estructura abierta y certificar el valor n50 final antes de la entrega.
+                                        </p>
+                                    </div>
+                                    <div className="mt-4 pt-3 border-t border-[#294537] text-[11px] font-mono-num text-[#86EFAC]">
+                                        Capítulo 18 · Control de calidad
+                                    </div>
+                                </div>
+
+                                {/* Layer 5 */}
+                                <div className="p-6 rounded-2xl bg-[#1D3228] border border-[#2B493B] flex flex-col justify-between">
+                                    <div>
+                                        <div className="w-10 h-10 rounded-xl bg-[#243F32] flex items-center justify-center text-[#86EFAC] mb-4">
+                                            <Award className="w-5 h-5" />
+                                        </div>
+                                        <h3 className="font-serif-display font-bold text-lg text-white">5. Certificación EnerPHit</h3>
+                                        <p className="text-xs text-[#B7C8BE] mt-2 leading-relaxed">
+                                            Partida presupuestada para la gestión, tasas y cálculo del balance energético PHPP bajo el estándar oficial del Passivhaus Institut para rehabilitación.
+                                        </p>
+                                    </div>
+                                    <div className="mt-4 pt-3 border-t border-[#294537] text-[11px] font-mono-num text-[#86EFAC]">
+                                        Capítulo 18 · 3.081,600 € base
+                                    </div>
+                                </div>
+
+                                {/* Layer 6 */}
+                                <div className="p-6 rounded-2xl bg-[#1D3228] border border-[#2B493B] flex flex-col justify-between">
+                                    <div>
+                                        <div className="w-10 h-10 rounded-xl bg-[#243F32] flex items-center justify-center text-[#86EFAC] mb-4">
+                                            <Thermometer className="w-5 h-5" />
+                                        </div>
+                                        <h3 className="font-serif-display font-bold text-lg text-white">6. Reducción Demanda Térmica</h3>
+                                        <p className="text-xs text-[#B7C8BE] mt-2 leading-relaxed">
+                                            Al reducir drásticamente las pérdidas por transmisión y ventilación, la vivienda mantiene temperaturas estables de confort con un consumo energético residual.
+                                        </p>
+                                    </div>
+                                    <div className="mt-4 pt-3 border-t border-[#294537] text-[11px] font-mono-num text-[#86EFAC]">
+                                        Ahorro operativo a largo plazo
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Traceability & Validation Section */}
+                    <section id="validacion" className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full border-t border-[#E7DFD5]">
+                        <div className="max-w-3xl mb-8">
+                            <span className="text-xs font-semibold uppercase tracking-wider text-[#7C7267] bg-[#EFE9DF] px-3 py-1 rounded-full">
+                                Revisión & Control de Calidad
+                            </span>
+                            <h2 className="text-2xl sm:text-3xl font-serif-display font-bold text-[#1A2621] mt-2">
+                                Trazabilidad, discrepancias y validaciones pendientes
+                            </h2>
+                            <p className="text-xs sm:text-sm text-[#61574D] mt-1">
+                                Puntos clave a confirmar por la Dirección Facultativa y la Propiedad antes de la firma del contrato definitivo.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="p-5 rounded-2xl bg-white border border-[#E7DFD5] shadow-xs space-y-4">
+                                <div className="flex items-center gap-2.5 text-[#C85A32]">
+                                    <AlertTriangle className="w-5 h-5 shrink-0" />
+                                    <h4 className="font-serif-display font-bold text-sm text-[#242220]">
+                                        1. Alcance fiscal y tipo de IVA
+                                    </h4>
+                                </div>
+                                <p className="text-xs text-[#5C5349] leading-relaxed">
+                                    Todos los cálculos de este dosier aplican el <strong>IVA reducido del 10%</strong> para ejecuciones de obras de renovación y reparación en viviendas de uso particular (cumpliendo requisitos de coste de materiales inferiores al 40% de la base). Si algún suministro directo tributase al 21%, se reajustará en factura.
+                                </p>
+                            </div>
+
+                            <div className="p-5 rounded-2xl bg-white border border-[#E7DFD5] shadow-xs space-y-4">
+                                <div className="flex items-center gap-2.5 text-[#1B4965]">
+                                    <Flame className="w-5 h-5 shrink-0" />
+                                    <h4 className="font-serif-display font-bold text-sm text-[#242220]">
+                                        2. Fuente energética de calefacción en PREMIUM
+                                    </h4>
+                                </div>
+                                <p className="text-xs text-[#5C5349] leading-relaxed">
+                                    La propuesta PREMIUM incluye instalación de gas y radiadores Incaltec (+7.684 €). Debe confirmarse si el suministro de gas natural está disponible en la finca de Reino de Valencia 80 o si se plantea hibridación con aerotermia para el circuito de agua.
+                                </p>
+                            </div>
+
+                            <div className="p-5 rounded-2xl bg-white border border-[#E7DFD5] shadow-xs space-y-4">
+                                <div className="flex items-center gap-2.5 text-[#1E3A2B]">
+                                    <Wind className="w-5 h-5 shrink-0" />
+                                    <h4 className="font-serif-display font-bold text-sm text-[#242220]">
+                                        3. Trazado de conductos VMC en UPE
+                                    </h4>
+                                </div>
+                                <p className="text-xs text-[#5C5349] leading-relaxed">
+                                    El equipo Zehnder ComfoAir Flex 350 requiere plenum de distribución y bajada de falso techo puntual en pasillo/distribuidor para las bocas de impulsión y extracción. La Dirección Facultativa deberá validar las cotas libres de paso resultantes.
+                                </p>
+                            </div>
+
+                            <div className="p-5 rounded-2xl bg-white border border-[#E7DFD5] shadow-xs space-y-4">
+                                <div className="flex items-center gap-2.5 text-[#1E3A2B]">
+                                    <Award className="w-5 h-5 shrink-0" />
+                                    <h4 className="font-serif-display font-bold text-sm text-[#242220]">
+                                        4. Alcance real de la certificación EnerPHit
+                                    </h4>
+                                </div>
+                                <p className="text-xs text-[#5C5349] leading-relaxed">
+                                    La propuesta UPE incluye la dotación presupuestaria para ensayos y tasas. La consecución formal del certificado depende del cálculo PHPP del proyecto definitivo, la ausencia de puentes térmicos en encuentros de fachada y el resultado del ensayo Blower Door (n50 ≤ 1.0 h⁻¹ en rehabilitación).
+                                </p>
+                            </div>
+
+                            <div className="p-5 rounded-2xl bg-white border border-[#E7DFD5] shadow-xs space-y-4">
+                                <div className="flex items-center gap-2.5 text-[#8C6D46]">
+                                    <DoorOpen className="w-5 h-5 shrink-0" />
+                                    <h4 className="font-serif-display font-bold text-sm text-[#242220]">
+                                        5. Detalle de carpintería interior en PREMIUM
+                                    </h4>
+                                </div>
+                                <p className="text-xs text-[#5C5349] leading-relaxed">
+                                    El incremento de +12.440 € en el Cap. 11 de la versión PREMIUM corresponde al paso de tableros laminados a lacados en taller. Se recomienda definir muestras físicas de tono, brillo (satinado/mate) y tipo de tirador fresado antes del encargo definitivo.
+                                </p>
+                            </div>
+
+                            <div className="p-5 rounded-2xl bg-white border border-[#E7DFD5] shadow-xs space-y-4">
+                                <div className="flex items-center gap-2.5 text-[#544D45]">
+                                    <FileCheck className="w-5 h-5 shrink-0" />
+                                    <h4 className="font-serif-display font-bold text-sm text-[#242220]">
+                                        6. Mediciones finales y partidas con 0,000 €
+                                    </h4>
+                                </div>
+                                <p className="text-xs text-[#5C5349] leading-relaxed">
+                                    En los capítulos 08 de la versión Premium (138,24 €) y 18 de las versiones Estándar/Premium (0,00 €), las diferencias responden a la supresión técnica de ventilaciones convencionales duplicadas o partidas exclusivas del estándar Passivhaus.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Balanced Executive Conclusion */}
+                    <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full border-t border-[#E7DFD5]">
+                        <div className="p-8 rounded-2xl bg-[#F4EFEA] border border-[#DDD3C6]">
+                            <h3 className="text-xl sm:text-2xl font-serif-display font-bold text-[#1A2621]">
+                                Conclusión y recomendación técnica para la toma de decisión
+                            </h3>
+                            <div className="mt-4 text-xs sm:text-sm text-[#544D45] space-y-3 leading-relaxed">
+                                <p>
+                                    <strong>1. Opción ESTÁNDAR (179.945 € IVA inc.):</strong> Es la solución de inversión optimizada. Resuelve con solvencia técnica todas las necesidades de habitabilidad, confort climático y estética moderna de la vivienda en Reino de Valencia 80.
+                                </p>
+                                <p>
+                                    <strong>2. Opción PREMIUM (202.229 € IVA inc. / +12,38%):</strong> Es la alternativa de mayor confort interior y estética de ebanistería. Ideal si la propiedad prioriza radiadores de agua en dormitorios y armarios lacados continuos a medida.
+                                </p>
+                                <p>
+                                    <strong>3. Opción UPE (240.737 € IVA inc. / +33,78%):</strong> Representa una transformación de vanguardia energética bajo estándar Passivhaus/EnerPHit. Exige un mayor esfuerzo de inversión inicial (+60.792 € frente a Estándar), que se compensa con un confort térmico y acústico insuperable, aire interior purificado continuamente y un valor patrimonial diferenciado en el mercado inmobiliario de Valencia.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Footer with Legal & Budgetary Notes */}
+                    <footer className="mt-auto bg-[#1A2621] text-[#9FB3A8] text-xs py-10 px-4 sm:px-6 lg:px-8 border-t border-[#263E32]">
+                        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 pb-8 border-b border-[#2A4437]">
+                            <div>
+                                <span className="font-serif-display font-bold text-white text-base tracking-wider block mb-2">ENUE PROYECTOS Y CONSTRUCCIÓN S.L.</span>
+                                <p className="text-xs text-[#8A9E93] leading-relaxed">
+                                    Especialistas en reforma integral, arquitectura técnica y construcción de alta eficiencia energética en Valencia.
+                                </p>
+                                <div className="mt-3 text-[11px] text-[#CBD5E1]">
+                                    Proyecto 26034 · Reino de Valencia 80 · Marta Ortiz
+                                </div>
+                            </div>
+
+                            <div className="space-y-1.5 text-[11px] text-[#A6BCB1]">
+                                <strong className="text-white block text-xs mb-1 font-semibold">Condiciones presupuestarias generales:</strong>
+                                <div>• <strong>IVA aplicado:</strong> 10% según régimen de reformas en vivienda particular.</div>
+                                <div>• <strong>Tasas y licencias:</strong> ICIO, tasas municipales y ocupación de vía no incluidas salvo mención expresa.</div>
+                                <div>• <strong>Suministros de obra:</strong> Acometidas definitivas y altas no incluidas.</div>
+                                <div>• <strong>Alcance:</strong> Limitado rigurosamente a las unidades de obra desglosadas en las mediciones oficiales.</div>
+                            </div>
+
+                            <div className="space-y-1.5 text-[11px] text-[#A6BCB1]">
+                                <strong className="text-white block text-xs mb-1 font-semibold">Validez y garantías:</strong>
+                                <div>• <strong>Validez de la oferta:</strong> 7 días naturales desde la fecha de emisión (24/09/2026).</div>
+                                <div>• <strong>Garantía de ejecución:</strong> 1 año conforme a ley, condicionada a la liquidación total de pagos.</div>
+                                <div>• <strong>Plazo de ejecución:</strong> Calendario orientativo sujeto a la concesión de licencias y formalización del contrato.</div>
+                            </div>
+                        </div>
+
+                        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-[11px] text-[#71877C]">
+                            <div>
+                                © 2026 ENUE Proyectos y Construcción S.L. · Todos los derechos reservados.
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <span>Dosier comparativo interactivo</span>
+                                <span>·</span>
+                                <span>Reino de Valencia 80 (Valencia)</span>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        }
+
+        createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
